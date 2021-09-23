@@ -22,6 +22,7 @@ steps:
     displayName: 'Build and Test'
     inputs:
       mavenPomFile: 'pom.xml'
+      mavenPath: '/opt/maven'
       mavenOptions: '-Xmx2048m'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
