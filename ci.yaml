@@ -1,6 +1,9 @@
-variables:
-  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+# Azure pipeline template for loading the Docker cache
+parameters:
+  - name: cacheImages
+    type: string
+    default: tomcat:8.5.45-jdk11-openjdk mysql:latest
+
 
 trigger:
 - master
@@ -9,32 +12,22 @@ pool:
   name: AWS
   demands:
    - agent.name -equals aws
-
+   
 steps:
   - task: Cache@2
-    displayName: 'Cache Maven local repo'
+    displayName: Cache task
     inputs:
-      key: '"funcs" | maven | "$(Agent.OS)" | pom.xml'
-      restoreKeys: |
-      path: $(MAVEN_CACHE_FOLDER)
+      key: 'docker | "$(Agent.OS)" | cache'
+      path: $(Pipeline.Workspace)/docker
+      cacheHitVar: CACHE_RESTORED                #Variable to set to 'true' when the cache is restored
+    
+  - script: |
+      docker load -i $(Pipeline.Workspace)/docker/cache.tar
+    displayName: Docker restore
+    condition: and(not(canceled()), eq(variables.CACHE_RESTORED, 'true'))
 
-  - task: Maven@3
-    displayName: 'Build and Test'
-    inputs:
-      mavenPomFile: 'pom.xml'
-      mavenPath: '/opt/maven'
-      mavenOptions: '-Xmx2048m'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.11'
-      jdkArchitectureOption: 'x64'
-      publishJUnitResults: true
-      testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      goals:  'package'
-
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage'
-    inputs:
-      codeCoverageTool: 'JaCoCo'
-      summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/jacoco.xml'
-      pathToSources: '$(System.DefaultWorkingDirectory)/src/main/java'
-      additionalCodeCoverageFiles: '$(System.DefaultWorkingDirectory)/target/jacoco.exec'
+  - script: |
+      mkdir -p $(Pipeline.Workspace)/docker
+      docker save -o $(Pipeline.Workspace)/docker/cache.tar cache
+    displayName: Docker save
+    condition: and(not(canceled()), or(failed(), ne(variables.CACHE_RESTORED, 'true')))
