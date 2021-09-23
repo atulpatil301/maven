@@ -4,7 +4,6 @@ parameters:
     type: string
     default: tomcat:8.5.45-jdk11-openjdk
 
-
 trigger:
 - master
 
@@ -20,8 +19,7 @@ steps:
       key: 'docker | "$(Agent.OS)" | cache'
       path: $(Pipeline.Workspace)/docker
       cacheHitVar: CACHE_RESTORED                #Variable to set to 'true' when the cache is restored
-	  
-    
+
   - script: |
       docker load -i $(Pipeline.Workspace)/docker/cache.tar
     displayName: Docker restore
