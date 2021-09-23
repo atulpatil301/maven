@@ -22,7 +22,7 @@ steps:
     displayName: 'Build and Test'
     inputs:
       mavenPomFile: 'pom.xml'
-      mavenSetM2Home: '/opt/maven/bin/mvn'
+      mavenSetM2Home: '/opt/maven'
       mavenOptions: '-Xmx2048m'
       javaHomeOption: 'JDKVersion'
       jdkVersionOption: '1.11'
@@ -30,11 +30,3 @@ steps:
       publishJUnitResults: true
       testResultsFiles: '**/TEST-*.xml'
       goals: 'package'
-
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage'
-    inputs:
-      codeCoverageTool: 'JaCoCo'
-      summaryFileLocation: '$(System.DefaultWorkingDirectory)/target/site/jacoco/jacoco.xml'
-      pathToSources: '$(System.DefaultWorkingDirectory)/src/main/java'
-      additionalCodeCoverageFiles: '$(System.DefaultWorkingDirectory)/target/jacoco.exec'
