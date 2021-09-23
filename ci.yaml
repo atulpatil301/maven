@@ -2,7 +2,7 @@
 parameters:
   - name: cacheImages
     type: string
-    default: pipelines-javascript-docker
+    default: ubuntu
 
 trigger:
 - master
@@ -27,6 +27,6 @@ steps:
 
   - script: |
       mkdir -p $(Pipeline.Workspace)/docker
-      docker save -o $(Pipeline.Workspace)/docker/default.tar cache
+      docker save -o $(Pipeline.Workspace)/docker/ubuntu.tar cache
     displayName: Docker save
     condition: and(not(canceled()), or(failed(), ne(variables.CACHE_RESTORED, 'true')))
