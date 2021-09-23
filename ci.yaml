@@ -2,7 +2,7 @@
 parameters:
   - name: cacheImages
     type: string
-    default: tomcat:8.5.45-jdk11-openjdk
+    default: pipelines-javascript-docker
 
 trigger:
 - master
