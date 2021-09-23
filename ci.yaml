@@ -6,7 +6,9 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: AWS
+  demands:
+   - agent.name -equals aws
 
 steps:
   - task: Cache@2
