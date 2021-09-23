@@ -1,3 +1,13 @@
+# Azure pipeline template for loading the Docker cache
+parameters:
+  - name: cacheImages
+    type: string
+    default: tomcat:8.5.45-jdk11-openjdk
+
+
+trigger:
+- master
+
 pool:
   name: AWS
   demands:
